@@ -1,5 +1,18 @@
 # ggimg: The Missing Image Primative for ggplot2
 
+## Installation
+
+The package is currently only available on GitHub and can be installed with
+
+```{r}
+remotes::install_github("statsmaths/ggimg")
+```
+
+It is planned to submit the package to CRAN by the end of the month
+(March 2020).
+
+## Overview
+
 The **ggplot2** R package provides over 50 types of geometry layers, with many
 of these internally built up from a small set of primative graphic types such
 as `geom_polygon` and `geom_rect`. Putting these elements together provides
@@ -13,7 +26,7 @@ set of functions for working with images, however they require additional
 external dependencies and are not convenient for quick tinkering, hands-on
 workshops, or as dependencies for other packages.
 
-The package **ggimg** provides a single new geometry type called `geom_img`
+The package **ggimg** provides a single new geometry, `geom_img`,
 that displays one image for each row in the corresponding dataset. It has five
 required aesthetics and one optional aesthetics as follows:
 
@@ -27,9 +40,13 @@ component,  which will be used if alpha is a negative number (the default).
 If alpha is negative and no alpha channel is present, an alpha value of 1 is
 assumed.
 
+There are many possibilities for extending the package to deal with other
+image types, different ways of defining the image region (height and width;
+max/min dimension for preserving aspect ratios), and many kinds of image
+preprocessing that can be done. However, as mentioned above, this package for
+the moment is intended to only provide a low-level interface that can be easily
+maintained in used in down-stream scripts and packages. For example, check out
+my package [ggmaptile](https://github.com/statsmaths/ggmaptile) which uses
+`geom_img` to display slippy map tiles underneath geospatial datasets.
 
-
-
-
-
-A few other packages,
+## Usage
