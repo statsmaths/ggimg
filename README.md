@@ -107,7 +107,7 @@ The output looks nice without much more work! Notice that because our layer
 does not have an explicit 'x' or 'y' variable axis labels need to be input
 manually with `labs`, if needed.
 
-## A Second Example
+## A Longer Example
 
 As a more flexible option, we can instead load the images into R directly and
 store them as a list column in our dataset. This allows us to do all kinds of
@@ -154,7 +154,7 @@ ggplot(posters) +
     xmax = avg_sat + 0.03,
     ymin = avg_val - 0.03,
     ymax = avg_val + 0.03,
-    img = geom_img
+    img = img_array
   )) +
   theme_minimal() +
   labs(x = "Average Saturation", y = "Average Value")

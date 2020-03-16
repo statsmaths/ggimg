@@ -33,6 +33,8 @@
 #'                     helper functions that define both data and aesthetics
 #'                     and shouldn't inherit behaviour from the default plot
 #'                     specification, e.g. [borders()].
+#' @param ...          Other arguments passed on to [layer()]. These are often
+#'                     aesthetics, used to set an aesthetic to a fixed value.
 #'
 #' @author Taylor B. Arnold, \email{taylor.arnold@@acm.org}
 #'
@@ -54,7 +56,7 @@ geom_img <- function(
     position = position,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
-    ...
+    params = list(...)
   )
 }
 
@@ -107,19 +109,21 @@ file_ext <- function (fpath)
 # --- return an array of the image file
 load_img <- function(input)
 {
-  fext <- tolower(file_ext(input))
-  prefix <- substr(input, 1, 4)
-  if (prefix == "http")
-  {
-    download.file(input, tf <- tempfile(fileext = fext))
-    img <- read_img(tf, fext)
-    file.remove(tf)
-  } else if (is.character(input) | is.factor(input)) {
-    img <- read_img(input, fext)
-  } else if (is.array(input)) {
-    img <- input
+  if (is.list(input)) {
+    img <- input[[1]]
   } else {
-    stop("Cannot read image file.")
+    fext <- tolower(file_ext(input))
+    prefix <- substr(input, 1, 4)
+    if (prefix == "http")
+    {
+      download.file(input, tf <- tempfile(fileext = fext))
+      img <- read_img(tf, fext)
+      file.remove(tf)
+    } else if (is.character(input) | is.factor(input)) {
+      img <- read_img(as.character(input), fext)
+    } else {
+      stop("Cannot read image file.")
+    }
   }
 
   img

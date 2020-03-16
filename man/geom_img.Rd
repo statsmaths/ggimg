@@ -53,6 +53,9 @@ rather than combining with them. This is most useful for
 helper functions that define both data and aesthetics
 and shouldn't inherit behaviour from the default plot
 specification, e.g. [borders()].}
+
+\item{...}{Other arguments passed on to [layer()]. These are often
+aesthetics, used to set an aesthetic to a fixed value.}
 }
 \description{
 Display Images given Bounding Boxes
