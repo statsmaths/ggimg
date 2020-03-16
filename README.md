@@ -160,4 +160,4 @@ ggplot(posters) +
   labs(x = "Average Saturation", y = "Average Value")
 ```
 
-![](examples/poster_scatter.jpg)
+![](examples/poster_hsv.jpg)
