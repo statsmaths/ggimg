@@ -1,4 +1,4 @@
-#' Display PNG and JPEG Images given Bounding Boxes
+#' Display Images given Bounding Boxes
 #'
 #' @param mapping      Set of aesthetic mappings created by [aes()] or
 #'                     [aes_()]. If specified and `inherit.aes = TRUE` (the
@@ -37,13 +37,14 @@
 #' @author Taylor B. Arnold, \email{taylor.arnold@@acm.org}
 #'
 #' @export
-geom_image_bbox <- function(
+geom_img <- function(
   mapping = NULL,
   data = NULL,
   stat = "identity",
   position = "identity",
   show.legend = NA,
-  inherit.aes = TRUE
+  inherit.aes = TRUE,
+  ...
 ) {
   ggplot2::layer(
     geom = GeomImageBBox,
@@ -52,7 +53,8 @@ geom_image_bbox <- function(
     stat = stat,
     position = position,
     show.legend = show.legend,
-    inherit.aes = inherit.aes
+    inherit.aes = inherit.aes,
+    ...
   )
 }
 
@@ -63,7 +65,7 @@ geom_image_bbox <- function(
 GeomImageBBox <- ggplot2::ggproto(
   "GeomImageBBox",
   ggplot2::Geom,
-  required_aes = c("xmin", "xmax", "ymin", "ymax", "path"),
+  required_aes = c("xmin", "xmax", "ymin", "ymax", "img"),
   non_missing_aes = c("alpha"),
   default_aes = ggplot2::aes(
     alpha = 1
@@ -73,21 +75,11 @@ GeomImageBBox <- ggplot2::ggproto(
 
   draw_panel = function(data, panel_params, coord) {
     coords <- coord$transform(data, panel_params)
-    grobs <- vector("list", length(coords$path))
+    grobs <- vector("list", length(coords$img))
     class(grobs) <- "gList"
     for (i in seq_along(grobs))
     {
-      nc <- nchar(coords$path[i])
-      ext <- tolower(substr(coords$path[i], nc - 2L, nc))
-      if ( ext == "png" )
-      {
-        img <- png::readPNG(coords$path[i])
-      } else if ( ext %in% c("peg", "jpg") ) {
-        img <- jpeg::readJPEG(coords$path[i])
-      } else {
-        stop(sprintf("Cannot open file %s", coords$path[i]))
-      }
-
+      img <- load_img(coords$img[i])
       img <- fix_img_dims(img, alpha = coords$alpha[i])
 
       grobs[[i]] <- grid::rasterGrob(
@@ -104,6 +96,54 @@ GeomImageBBox <- ggplot2::ggproto(
   }
 )
 
+# Return extension of a file path
+file_ext <- function (fpath)
+{
+    pos <- regexpr("\\.([[:alnum:]]+)$", fpath)
+    ifelse(pos > -1L, substring(fpath, pos + 1L), "")
+}
+
+# Given an input --- either a URL, local file path, or a RasterImage itself
+# --- return an array of the image file
+load_img <- function(input)
+{
+  fext <- tolower(file_ext(input))
+  prefix <- substr(input, 1, 4)
+  if (prefix == "http")
+  {
+    download.file(input, tf <- tempfile(fileext = fext))
+    img <- read_img(tf, fext)
+    file.remove(tf)
+  } else if (is.character(input) | is.factor(input)) {
+    img <- read_img(input, fext)
+  } else if (is.array(input)) {
+    img <- input
+  } else {
+    stop("Cannot read image file.")
+  }
+
+  img
+}
+
+# Given an input --- either a URL, local file path, or a RasterImage itself
+# --- return an array of the image file
+read_img <- function(path, fext)
+{
+  if ( fext == "png" )
+  {
+    img <- png::readPNG(path)
+  } else if ( fext %in% c("peg", "jpg") ) {
+    img <- jpeg::readJPEG(path)
+  } else {
+    stop(sprintf("Cannot open file %s", path))
+  }
+
+  img
+}
+
+# Takes an input image file (either an array or matrix), along with a scalar
+# alpha value, and returns an array that will always have four channels; set
+# alpha to a negative number to avoid overwriting any present opacity values
 fix_img_dims <- function(img, alpha)
 {
   # Black and white images may be returned as a matrix
@@ -115,18 +155,24 @@ fix_img_dims <- function(img, alpha)
     alpha_channel <- array(alpha, dim = c(dim(img)[1:2], 1L))
     img <- abind::abind(img, img, img, alpha_channel, along = 3L)
   } else if (nchannel == 2L) {
+    if (alpha >= 0) {
+      alpha_channel <- array(alpha, dim = c(dim(img)[1:2], 1L))
+    } else {
+      alpha_channel <- img[, , 2L, drop=FALSE]
+    }
     img <- img[, , 1L, drop=FALSE]
-    alpha_channel <- array(alpha, dim = c(dim(img)[1:2], 1L))
     img <- abind::abind(img, img, img, alpha_channel, along = 3L)
   } else if (nchannel == 3L) {
     alpha_channel <- array(alpha, dim = c(dim(img)[1:2], 1L))
     img <- abind::abind(img, alpha_channel, along = 3L)
   } else if (nchannel == 4L) {
-    img[,,4L] <- alpha
+    if (alpha >= 0) img[,,4L] <- alpha
   } else {
     stop(
-      sprintf("We do not know how to display an image with %d channels",
-      nchannel)
+      sprintf(
+        "We do not know how to display an image with %d channels",
+        nchannel
+      )
     )
   }
 
