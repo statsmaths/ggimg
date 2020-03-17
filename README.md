@@ -1,5 +1,11 @@
 # ggimg: The Missing Image Primitive for ggplot2
 
+**Author:** Taylor B. Arnold<br/>
+**License:** [GPL-2](https://opensource.org/licenses/GPL-2.0)
+
+[![CRAN Version](http://www.r-pkg.org/badges/version/ggimg)](https://CRAN.R-project.org/package=ggimg) [![Travis-CI Build Status](https://travis-ci.org/statsmaths/ggimg.svg?branch=master)](https://travis-ci.org/statsmaths/ggimg) ![Downloads](http://cranlogs.r-pkg.org/badges/ggimg)
+[![Codecov test coverage](https://codecov.io/gh/statsmaths/ggimg/branch/master/graph/badge.svg)](https://codecov.io/gh/statsmaths/ggimg?branch=master)
+
 ## Installation
 
 The package is currently only available on GitHub and can be installed with
@@ -104,7 +110,7 @@ ggplot(posters) +
   theme_minimal()
 ```
 
-![](examples/poster_scatter.jpg)
+![](figs/poster_scatter.jpg)
 
 The output looks nice without much more work! Notice that because our layer
 does not have an explicit 'x' or 'y' variable axis labels need to be input
@@ -163,4 +169,4 @@ ggplot(posters) +
   labs(x = "Average Saturation", y = "Average Value")
 ```
 
-![](examples/poster_hsv.jpg)
+![](figs/poster_hsv.jpg)
