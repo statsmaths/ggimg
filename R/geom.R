@@ -49,7 +49,7 @@ geom_img <- function(
   ...
 ) {
   ggplot2::layer(
-    geom = GeomImageBBox,
+    geom = GeomImage,
     mapping = mapping,
     data = data,
     stat = stat,
@@ -61,11 +61,11 @@ geom_img <- function(
 }
 
 #' @export
-#' @rdname geom_image_bbox
+#' @rdname geom_img
 #' @importFrom png readPNG
 #' @importFrom jpeg readJPEG
-GeomImageBBox <- ggplot2::ggproto(
-  "GeomImageBBox",
+GeomImage <- ggplot2::ggproto(
+  "GeomImage",
   ggplot2::Geom,
   required_aes = c("xmin", "xmax", "ymin", "ymax", "img"),
   non_missing_aes = c("alpha"),
@@ -116,7 +116,7 @@ load_img <- function(input)
     prefix <- substr(input, 1, 4)
     if (prefix == "http")
     {
-      download.file(input, tf <- tempfile(fileext = fext))
+      utils::download.file(input, tf <- tempfile(fileext = fext))
       img <- read_img(tf, fext)
       file.remove(tf)
     } else if (is.character(input) | is.factor(input)) {
@@ -150,7 +150,7 @@ read_img <- function(path, fext)
 # alpha to a negative number to avoid overwriting any present opacity values
 fix_img_dims <- function(img, alpha)
 {
-  # Black and white images may be returned as a matrix
+  # Black and white images may be given as a matrix
   if (length(dim(img)) == 2L) img <- array(img, dim = c(dim(img), 1L))
 
   nchannel <- dim(img)[3]
@@ -179,6 +179,8 @@ fix_img_dims <- function(img, alpha)
       )
     )
   }
+
+  dimnames(img) <- NULL
 
   return(img)
 }

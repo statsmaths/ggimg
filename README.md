@@ -18,7 +18,7 @@ of these internally built up from a small set of primitive graphic types such
 as `geom_polygon` and `geom_rect`. Putting these elements together provides
 the ability to create a wide variety of data visualizations. Curiously, however,
 there is currently no default layer for displaying a collection of images.
-The function `geom_raster` allows one to displaying a grid *as* an image and
+The function `geom_raster` allows for displaying a grid *as* an image and
 `annotation_raster` makes it possible to add a single to a plot. But what if
 we have an image associated with each row of our dataset and want to display
 these on the plot? Some other packages, such as **ggimage**, provide a complete
@@ -53,33 +53,39 @@ my package [ggmaptile](https://github.com/statsmaths/ggmaptile) which uses
 
 As an example of how to use the `geom_img` layer, we will use some data about
 the 50 highest grossing animated U.S. films and their movie posters. The data
-is included in this GitHub repository, and should work as written if you have
-cloned the repository. Unfortunately, the data are a bit too large to include
-with the package itself, particularly as it is intended to be a good lightweight
-drop-in dependency for other projects.
+is included with the package, along with a thumbnail image of each movie's
+poster.
 
 To start, we read in the dataset, which includes one row for each movie along
-with a path to the movie poster and some additional metadata.
+with a path to the movie poster and some additional metadata. We will also add
+a column containing the full path to the images, which are installed in the
+same location as the package.
 
 ```{r}
-posters <- readr::read_csv(file.path("examples", "poster_animation.csv"))
-dplyr::select(posters, year, title, img, stars)
+library(ggimg)
+library(ggplot2)
+library(dplyr)
+
+posters <- mutate(posters,
+  path = file.path(system.file("extdata", package="ggimg"), img)
+)
+posters
 ```
 ```
-# A tibble: 50 x 4
-    year title                 img                                         stars
-   <dbl> <chr>                 <chr>                                       <dbl>
- 1  2018 Incredibles 2         examples/images/2018_incredibles_2.jpg        7.6
- 2  2019 The Lion King         examples/images/2019_the_lion_king.jpg        6.9
- 3  2016 Finding Dory          examples/images/2016_finding_dory.jpg         7.3
- 4  2004 Shrek 2               examples/images/2004_shrek_2.jpg              7.2
- 5  2019 Toy Story 4           examples/images/2019_toy_story_4.jpg          7.8
- 6  2010 Toy Story 3           examples/images/2010_toy_story_3.jpg          8.3
- 7  2013 Frozen                examples/images/2013_frozen.jpg               7.5
- 8  2003 Finding Nemo          examples/images/2003_finding_nemo.jpg         8.1
- 9  2016 The Secret Life of P… examples/images/2016_the_secret_life_of_pe…   6.5
-10  2013 Despicable Me 2       examples/images/2013_despicable_me_2.jpg      7.3
-# … with 40 more rows
+# A tibble: 50 x 12
+    year title img   rating_count  gross genre rating runtime stars metacritic
+   <dbl> <chr> <chr>        <dbl>  <dbl> <chr> <chr>    <dbl> <dbl>      <dbl>
+ 1  2018 Incr… 2018…       226170 6.09e8 Anim… PG         118   7.6         NA
+ 2  2019 The … 2019…       168828 5.40e8 Anim… PG         118   6.9         55
+ 3  2016 Find… 2016…       224980 4.86e8 Anim… PG          97   7.3         NA
+ 4  2004 Shre… 2004…       398797 4.36e8 Anim… PG          93   7.2         NA
+ 5  2019 Toy … 2019…       159927 4.33e8 Anim… G          100   7.8         NA
+ 6  2010 Toy … 2010…       719003 4.15e8 Anim… G          103   8.3         NA
+ 7  2013 Froz… 2013…       545450 4.01e8 Anim… PG         102   7.5         NA
+ 8  2003 Find… 2003…       903078 3.81e8 Anim… G          100   8.1         NA
+ 9  2016 The … 2016…       173603 3.68e8 Anim… PG          87   6.5         NA
+10  2013 Desp… 2013…       355343 3.68e8 Anim… PG          98   7.3         NA
+# … with 40 more rows, and 2 more variables: description <chr>, path <chr>
 ```
 
 Let's plot the year each film was released along the x-axis and its score on
@@ -87,16 +93,13 @@ IMDb on the y-axis. We will set the height and with of the images to be one unit
 by off-setting the year and stars variable by plus or minus one half.
 
 ```{r}
-library(ggplot2)
-library(ggimg)
-
 ggplot(posters) +
   geom_img(aes(
     xmin = year - 0.5,
     xmax = year + 0.5,
     ymin = stars - 0.5,
     ymax = stars + 0.5,
-    img = img
+    img = path
   )) +
   theme_minimal()
 ```
@@ -119,7 +122,7 @@ posters into R using the `readJPEG` function:
 library(jpeg)
 
 posters$img_array <- lapply(
-  posters$img, function(path) readJPEG(path)
+  posters$path, function(path) readJPEG(path)
 )
 ```
 

@@ -5,7 +5,7 @@ Version: 0.0.1
 Authors@R: c(person(given = "Taylor B.", family = "Arnold", email = "taylor.arnold@acm.org", role = c("aut", "cre")))
 Author: Taylor B. Arnold [aut, cre]
 Maintainer: Taylor B. Arnold <taylor.arnold@acm.org>
-Description: Provides a small set of functions to display a collection of PNG and JPEG images in ggplot. Images can be specifies by provide URLs, local paths, or complete rasters images. Locations specified by bounding boxes or central locations.
+Description: Provides a single new ggplot2 geometry that displays one image for each row in the corresponding dataset. Can take URLs, paths to local PNG and JPEG images, or array objecs as input. 
 Depends:
     R (>= 3.5.0)
 Imports:
@@ -16,7 +16,9 @@ Imports:
     abind
 Suggests:
     knitr (>= 1.15),
-    dplyr
+    dplyr,
+    testthat (>= 1.0.1),
+    covr (>= 2.2.2)
 License: GPL-2
 URL: https://statsmaths.github.io/ggimg/
 BugReports: http://github.com/statsmaths/ggimg/issues
