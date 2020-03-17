@@ -1,21 +1,25 @@
-# ggimg: Missing Image Primitives for ggplot2
+---
+title: "Introduction to the ggimg Package"
+author: Taylor Arnold
+output:
+  rmarkdown::html_vignette:
+    css: style.css
+  vignette: >
+    %\VignetteIndexEntry{Introduction to the ggimg Package}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+---
 
-**Author:** Taylor B. Arnold<br/>
-**License:** [GPL-2](https://opensource.org/licenses/GPL-2.0)
-
-[![CRAN Version](http://www.r-pkg.org/badges/version/ggimg)](https://CRAN.R-project.org/package=ggimg) [![Travis-CI Build Status](https://travis-ci.org/statsmaths/ggimg.svg?branch=master)](https://travis-ci.org/statsmaths/ggimg) ![Downloads](http://cranlogs.r-pkg.org/badges/ggimg)
-[![Codecov test coverage](https://codecov.io/gh/statsmaths/ggimg/branch/master/graph/badge.svg)](https://codecov.io/gh/statsmaths/ggimg?branch=master)
-
-## Installation
-
-The package is currently only available on GitHub and can be installed with
-
-```{r}
-remotes::install_github("statsmaths/ggimg")
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  eval = TRUE,
+  fig.height = 4,
+  fig.width = 7,
+  fig.path='figs/',
+  dpi = 125,
+  fig.align = "center"
+)
 ```
-
-It is planned to submit the package to CRAN by the end of the month
-(March 2020).
 
 ## Overview
 
@@ -106,8 +110,6 @@ ggplot(posters) +
   theme_minimal()
 ```
 
-![](figs/poster_rect.jpg)
-
 The output looks nice without much more work! Notice that because our layer
 does not have an explicit 'x' or 'y' variable axis labels need to be input
 manually with `labs`, if needed.
@@ -126,8 +128,6 @@ ggplot(posters) +
   ), size = 1) +
   theme_minimal()
 ```
-
-![](figs/poster_point.jpg)
 
 Notice that the point geometry does include automatic axis labels, but does not
 automatically expand to capture every single part of each image (this is
@@ -197,5 +197,3 @@ ggplot(posters) +
   )) +
   theme_minimal()
 ```
-
-![](figs/poster_hsv.jpg)
