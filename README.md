@@ -34,7 +34,7 @@ workshops, or as dependencies for other packages.
 
 The package **ggimg** provides two new geometries, `geom_rect_img` and
 `geom_point_img`, that display one image for each row in the corresponding
-dataset. The function similarly to `geom_rect` and `geom_point`, but have an
+dataset. They function similarly to `geom_rect` and `geom_point`, but have an
 additional aesthetic "img" that specifies the image to display for each row
 in one of three ways:
 
@@ -49,7 +49,7 @@ preprocessing that can be done. However, as mentioned above, this package for
 the moment is intended to only provide a low-level interface that can be easily
 maintained in used in down-stream scripts and packages. For example, check out
 my package [ggmaptile](https://github.com/statsmaths/ggmaptile) which uses
-`geom_img` to display slippy map tiles underneath geospatial datasets.
+`geom_rect_img` to display slippy map tiles underneath geospatial datasets.
 
 ## Example Usage
 
@@ -199,3 +199,30 @@ ggplot(posters) +
 ```
 
 ![](figs/poster_hsv.jpg)
+
+
+## Citation
+
+If you make use of the package in your work, please cite it as follows:
+
+```
+@Manual{,
+  title = {ggimg: Graphics Layers for Plotting Image Data with ggplot2},
+  author = {Taylor B. Arnold},
+  year = {2020},
+  note = {R package version 0.1.0},
+  url = {https://statsmaths.github.io/ggimg/},
+}
+```
+
+## Contributing
+
+Contributions, including bug fixes and new features, to the package are
+welcome. When contributing to this repository, please first discuss the change
+you wish to make via a GitHub issue or email with the maintainers of this
+repository before making a change. Small bug fixes can be given directly
+as pull requests.
+
+Please note that this project is released with a
+[Contributor Code of Conduct](CONDUCT.md). By participating in this project
+you agree to abide by its terms.

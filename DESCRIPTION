@@ -1,11 +1,20 @@
 Package: ggimg
 Type: Package
-Title: Lightweight Library for Plotting JPEG and PNG Images with ggplot2
-Version: 0.0.1
-Authors@R: c(person(given = "Taylor B.", family = "Arnold", email = "taylor.arnold@acm.org", role = c("aut", "cre")))
+Title: Graphics Layers for Plotting Image Data with ggplot2
+Version: 0.1.0
+Authors@R: c(person(
+  given = "Taylor B.",
+  family = "Arnold",
+  email = "taylor.arnold@acm.org",
+  role = c("aut", "cre")))
 Author: Taylor B. Arnold [aut, cre]
 Maintainer: Taylor B. Arnold <taylor.arnold@acm.org>
-Description: Provides a single new ggplot2 geometry that displays one image for each row in the corresponding dataset. Can take URLs, paths to local PNG and JPEG images, or array objecs as input. 
+Description: Provides two new layer types for displaying image data as layers
+  within the Grammer of Graphics framework. Displays images using either a
+  rectangle interface, with a fixed bounding box, or a point interface using a
+  central point and general size parameter. Images cane be given as local
+  JPEG or PNG files, external resources, or as a list column containing
+  raster image data.
 Depends:
     R (>= 3.5.0)
 Imports:
