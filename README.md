@@ -8,29 +8,23 @@
 
 ## Installation
 
-The package is currently only available on GitHub and can be installed with
+The package is currently available on CRAN and can be downloaded with:
 
 ```{r}
 remotes::install_github("statsmaths/ggimg")
 ```
 
-It is planned to submit the package to CRAN by the end of the month
-(March 2020).
+The current development version can alternatively be installed directly from
+GitHub:
+
+```{r}
+remotes::install_github("statsmaths/ggimg")
+```
+
+More information about package and how to use it are given in the descriptions
+below.
 
 ## Overview
-
-The **ggplot2** R package provides over 50 types of geometry layers, with many
-of these internally built up from a small set of primitive graphic types such
-as `geom_polygon` and `geom_rect`. Putting these elements together provides
-the ability to create a wide variety of data visualizations. Curiously, however,
-there is currently no default layer for displaying a collection of images.
-The function `geom_raster` allows for displaying a grid *as* an image and
-`annotation_raster` makes it possible to add a single to a plot. But what if
-we have an image associated with each row of our dataset and want to display
-these on the plot? Some other packages, such as **ggimage**, provide a complete
-set of functions for working with images, however they require additional
-external dependencies and are not convenient for quick tinkering, hands-on
-workshops, or as dependencies for other packages.
 
 The package **ggimg** provides two new geometries, `geom_rect_img` and
 `geom_point_img`, that display one image for each row in the corresponding
@@ -51,7 +45,7 @@ maintained in used in down-stream scripts and packages. For example, check out
 my package [ggmaptile](https://github.com/statsmaths/ggmaptile) which uses
 `geom_rect_img` to display slippy map tiles underneath geospatial datasets.
 
-## Example Usage
+## A Simple Example
 
 As an example of how to use the `geom_rect_img` layer, we will use some data
 about the 50 highest grossing animated U.S. films and their movie posters. The
@@ -106,6 +100,8 @@ ggplot(posters) +
   theme_minimal()
 ```
 
+<!-- ggsave("figs/poster_rect.jpg", height = 3.5, width = 7) -->
+
 ![](figs/poster_rect.jpg)
 
 The output looks nice without much more work! Notice that because our layer
@@ -127,6 +123,8 @@ ggplot(posters) +
   theme_minimal()
 ```
 
+<!-- ggsave("figs/poster_point.jpg", height = 4, width = 7) -->
+
 ![](figs/poster_point.jpg)
 
 Notice that the point geometry does include automatic axis labels, but does not
@@ -136,11 +134,11 @@ Perhaps the biggest different between the rect and points result when resizing
 the plot window. The rectangles with always respect their bounding boxes,
 whereas the points will stay the same shape and size.
 
-## A Longer Example
+## Further Customization
 
 As a more flexible option, we can load the images into R directly and
 store them as a list column in our dataset. This allows us to do all kinds of
-pre- and post-processing, working with different data types, and showing images
+pre- and post-processing, work with different data types, and show images
 that are created or modified within R. As an example, we can read our movie
 posters into R using the `readJPEG` function:
 
@@ -152,54 +150,103 @@ posters$img_array <- lapply(
 )
 ```
 
-We can post-processing the images by putting a black border around each image:
+We can than post-processing the images by putting a black border around each
+image:
 
 ```{r}
+width <- 6L  # border width in pixels
 posters$img_array <- lapply(
   posters$img_array, function(img) {
-    img[c(1, 2, nrow(img) - 1, nrow(img)), , ] <- 0
-    img[, c(1, 2, ncol(img) - 1, ncol(img)), ] <- 0
+    # set all RGB channels on the border of the
+    # image to 0 to produce a black border
+    img[seq(width), , ] <- 0
+    img[, seq(width), ] <- 0
+    img[nrow(img) - seq(width) + 1L, , ] <- 0
+    img[, ncol(img) - seq(width) + 1L, ] <- 0
     img
   }
 )
 ```
 
-Here, to show more of the things that are made possible with the library,
-we convert each image into its hue, saturation, and value and extract the
-average saturation (how rich the colors look) and value (how bright the image
-is).
-
-```{r}
-posters$hsv <- lapply(
-  posters$img_array, function(img) {
-    rgb2hsv(
-      as.numeric(img[,,1]),
-      as.numeric(img[,,2]),
-      as.numeric(img[,,3]),
-      maxColorValue = 1
-    )
-  }
-)
-
-posters$avg_sat <- sapply(posters$hsv, function(mat) mean(mat[2,]))
-posters$avg_val <- sapply(posters$hsv, function(mat) mean(mat[3,]))
-```
-
-And then we will put this into our `geom_img` by passing the img_array parameter
-to the img aesthetic.
+Now, we recreate the plot from the previous section by passing the "img_array"
+column to the "img" aesthetic in `geom_img`:
 
 ```{r}
 ggplot(posters) +
   geom_point_img(aes(
-    x = avg_sat,
-    y = avg_val,
+    x = year,
+    y = stars,
     img = img_array
-  )) +
+  ), size = 1) +
   theme_minimal()
 ```
 
-![](figs/poster_hsv.jpg)
+<!-- ggsave("figs/poster_point_border.jpg", height = 4, width = 7) -->
 
+![](figs/poster_point_border.jpg)
+
+## Performance
+
+Plotting many images within a graphics window can lead to performance issues
+when the number of images becomes large. Plotting images does take significantly
+longer than showing simple points or lines and there is no simple way around
+this fact. However, some strategies can be used when attempting to display
+hundreds or thousands of images. To illustrate this, let's create a simulated
+dataset from our posters collection with 1000 rows:
+
+```{r}
+posters_sim <- tibble(
+  x = runif(1000),
+  y = runif(1000),
+  img = sample(posters$path, 1000, TRUE)
+)
+```
+
+Notice that creating the ggplot graphics object itself is very fast. The
+time-consuming work comes from the actually plotting of the image. Here is a
+timing of a plot with `geom_point_img` where we save (rather than plot) the
+graphics object:
+
+```{r}
+system.time({
+  p <- ggplot(posters_sim) +
+    geom_point_img(aes(
+      x = x,
+      y = y,
+      img = img
+    ), size = 1) +
+    theme_minimal()  
+})
+```
+```
+user  system elapsed
+0.006   0.000   0.007
+```
+
+Creating to plot in an Quartz graphics window on a late-2019 MacBook Pro takes
+about 50 seconds of elapsed time:
+
+```{r}
+system.time({ print(p) })
+```
+```
+user  system elapsed
+44.131   5.632  49.877
+```
+
+We can produce the same graphic significantly faster if we instead save as a
+local PNG file.
+
+```{r}
+system.time({ ggsave(tf <- tempfile(fileext = ".png")) })
+```
+```
+user  system elapsed
+9.030   1.185  10.253
+```
+
+Here, it takes only 10 seconds to produce the same graphic, a 5-fold
+improvement. 
 
 ## Citation
 
@@ -211,7 +258,7 @@ If you make use of the package in your work, please cite it as follows:
   author = {Taylor B. Arnold},
   year = {2020},
   note = {R package version 0.1.0},
-  url = {https://statsmaths.github.io/ggimg/},
+  url = {https://github.com/statsmaths/ggmaptile},
 }
 ```
 

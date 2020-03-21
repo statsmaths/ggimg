@@ -34,6 +34,8 @@ test_that("Loading JPEG from disk", {
 
 test_that("Loading JPEG from web", {
 
+  testthat::skip_on_cran()
+
   # Test that the poster thumbnail in the package is the same as the one in the
   # GitHub repository
   local_path <- file.path(

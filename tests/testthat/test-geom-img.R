@@ -2,6 +2,8 @@ context("geom-img")
 
 test_that("Paths and raw images produce same ggplot object with rect", {
 
+  testthat::skip_on_cran()
+
   # Construct a plot using the paths given by the posters data
   posters$path <- file.path(
     system.file("extdata", package="ggimg"), posters$img
@@ -40,6 +42,8 @@ test_that("Paths and raw images produce same ggplot object with rect", {
 
 test_that("Paths and raw images produce same ggplot object with points", {
 
+  testthat::skip_on_cran()
+
   # Construct a plot using the paths given by the posters data
   posters$path <- file.path(
     system.file("extdata", package="ggimg"), posters$img
@@ -77,6 +81,8 @@ test_that("Paths and raw images produce same ggplot object with points", {
 })
 
 test_that("Can set different axis to scale on", {
+
+  testthat::skip_on_cran()
 
   # Construct a plot using the paths given by the posters data
   posters$path <- file.path(

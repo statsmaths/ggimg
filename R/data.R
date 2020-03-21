@@ -7,5 +7,4 @@
 #'
 #' @name posters
 #' @docType data
-#' @keywords data
 NULL
