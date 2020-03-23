@@ -11,7 +11,7 @@
 The package is currently available on CRAN and can be downloaded with:
 
 ```{r}
-remotes::install_github("statsmaths/ggimg")
+install.packages("ggimg")
 ```
 
 The current development version can alternatively be installed directly from
