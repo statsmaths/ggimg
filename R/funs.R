@@ -10,24 +10,32 @@ file_ext <- function (fpath)
 # --- return an array of the image file
 #' @importFrom png readPNG
 #' @importFrom jpeg readJPEG
-load_img <- function(input)
+load_img <- function(input, strict=TRUE)
 {
-  if (is.list(input)) {
-    img <- input[[1]]
-  } else {
-    fext <- tolower(file_ext(input))
-    prefix <- substr(input, 1, 4)
-    if (prefix == "http")
-    {
-      utils::download.file(input, tf <- tempfile(fileext = fext))
-      img <- read_img(tf, fext)
-      file.remove(tf)
-    } else if (is.character(input) | is.factor(input)) {
-      img <- read_img(as.character(input), fext)
+  img <- tryCatch({
+    if (is.list(input)) {
+      img <- input[[1]]
     } else {
-      stop("Cannot read image file.")
+      fext <- tolower(file_ext(input))
+      prefix <- substr(input, 1, 4)
+      if (prefix == "http")
+      {
+        utils::download.file(input, tf <- tempfile(fileext = fext))
+        img <- read_img(tf, fext)
+        file.remove(tf)
+      } else if (is.character(input) | is.factor(input)) {
+        img <- read_img(as.character(input), fext)
+      } else {
+        stop("Cannot read image file.")
+      }
     }
-  }
+
+    return(img)
+  },
+  error = function(cond) {
+    if (strict) stop(cond)
+    return(NULL)
+  })
 
   img
 }
@@ -51,7 +59,7 @@ read_img <- function(path, fext)
 # Takes an input image file (either an array or matrix), along with a scalar
 # alpha value, and returns an array that will always have four channels; set
 # alpha to a negative number to avoid overwriting any present opacity values
-fix_img_dims <- function(img, alpha)
+fix_img_dims <- function(img, alpha = 1)
 {
   # Black and white images may be given as a matrix
   if (length(dim(img)) == 2L) img <- array(img, dim = c(dim(img), 1L))
