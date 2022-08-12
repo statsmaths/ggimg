@@ -1,14 +1,14 @@
 Package: ggimg
 Type: Package
 Title: Graphics Layers for Plotting Image Data with 'ggplot2'
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(person(
   given = "Taylor B.",
   family = "Arnold",
-  email = "taylor.arnold@acm.org",
+  email = "tarnold2@richmond.edu",
   role = c("aut", "cre")))
 Author: Taylor B. Arnold [aut, cre]
-Maintainer: Taylor B. Arnold <taylor.arnold@acm.org>
+Maintainer: Taylor B. Arnold <tarnold2@richmond.edu>
 Description: Provides two new layer types for displaying image data as layers
   within the Grammar of Graphics framework. Displays images using either a
   rectangle interface, with a fixed bounding box, or a point interface using a
