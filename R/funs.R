@@ -6,11 +6,19 @@ file_ext <- function (fpath)
     ifelse(pos > -1L, substring(fpath, pos + 1L), "")
 }
 
-# Given an input --- either a URL, local file path, or a RasterImage itself
-# --- return an array of the image file
+#' Load an image
+#'
+#' Given an input, either a URL, local file path, or a RasterImage itself,
+#' return an array of the image file.
+#'
+#' @param input    the input as either a path, url, or the image itself
+#'
+#' @return         An array with the image.
+#'
 #' @importFrom png readPNG
 #' @importFrom jpeg readJPEG
-load_img <- function(input)
+#' @export
+gimg_load_img <- function(input)
 {
   if (is.list(input)) {
     img <- input[[1]]

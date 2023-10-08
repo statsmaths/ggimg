@@ -99,7 +99,7 @@ GeomRectImage <- ggplot2::ggproto(
     class(grobs) <- "gList"
     for (i in seq_along(grobs))
     {
-      img <- load_img(coords$img[i])
+      img <- gimg_load_img(coords$img[i])
       img <- fix_img_dims(img, alpha = coords$alpha[i])
 
       grobs[[i]] <- grid::rasterGrob(
@@ -248,7 +248,7 @@ GeomPointImage <- ggplot2::ggproto(
     class(grobs) <- "gList"
     for (i in seq_along(grobs))
     {
-      img <- load_img(coords$img[i])
+      img <- gimg_load_img(coords$img[i])
       img <- fix_img_dims(img, alpha = coords$alpha[i])
 
       if (along == "width")
